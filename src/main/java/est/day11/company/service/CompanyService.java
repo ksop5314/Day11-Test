@@ -19,8 +19,22 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
+    public int businessNumberCheck(String businessNumber) {
+        Company company = companyRepository.findByBusinessNumber(businessNumber);
+        if (company == null) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
     public Company addCompany(AddCompanyRequest addCompanyRequest) {
-        return companyRepository.save(addCompanyRequest.toEntity());
+        int check = businessNumberCheck(addCompanyRequest.getBusinessNumber());
+        if (check == 0) {
+            return companyRepository.save(addCompanyRequest.toEntity());
+        } else {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
     }
 
     public List<CompanyResponse> getCompanies() {
